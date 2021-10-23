@@ -18,17 +18,28 @@
       </b>
     </div>
     <div class="row q-gutter-md">
-      <div class="col-xs-12 col-sm-12 col-md-5">
-        <q-card>
-          <q-card-section>
-            <CommentForm @comment-submitted="addComment" /> </q-card-section
-        ></q-card>
+      <div v-if="isDoctor">
+        <div class="col-xs-12 col-sm-12 col-md-5">
+          <q-card>
+            <q-card-section>
+              <CommentForm @comment-submitted="addComment" /> </q-card-section
+          ></q-card>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6">
+          <q-card style="height: 100%">
+            <q-card-section>
+              <DoctorComment :comments="comments" /> </q-card-section
+          ></q-card>
+        </div>
       </div>
-      <div class="col-xs-12 col-sm-12 col-md-6">
-        <q-card style="height: 100%">
-          <q-card-section>
-            <DoctorComment :comments="comments" /> </q-card-section
-        ></q-card>
+
+      <div v-if="isUser">
+        <div class="col-xs-12 col-sm-12 col-md-11">
+          <q-card style="height: 100%">
+            <q-card-section>
+              <DoctorComment :comments="comments" /> </q-card-section
+          ></q-card>
+        </div>
       </div>
     </div>
     <br />
