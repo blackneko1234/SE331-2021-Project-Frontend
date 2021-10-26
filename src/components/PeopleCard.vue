@@ -1,8 +1,18 @@
 <template>
   <q-card class="my-card shadow-10" :root="listEl" transition="scale">
     <q-card-section horizontal>
-      <q-img class="col-5" style="margin: 2%" :src="peoples.profilepic" />
-
+      <q-img
+        class="col-5"
+        style="margin: 2%"
+        src="https://secure.gravatar.com/avatar/f63ba6eacfa6a7f1287872ee6bf5195b?s=96&r=g&d=https://dbtut.com/wp-content/plugins/userswp/assets/images/no_profile.png"
+        v-if="!peoples.image"
+      />
+      <q-img
+        class="col-5"
+        style="margin: 2%"
+        :src="peoples.image"
+        v-if="peoples.image"
+      />
       <q-card-section
         style="word-wrap: break-word margin: 0.7%"
         class="col-7 q-mt-sm q-mb-xs"
@@ -13,9 +23,9 @@
         >
           <div class="text-h5">
             <b>
-              {{ peoples.name }}
+              {{ peoples.firstname }}
               <br />
-              {{ peoples.surname }}
+              {{ peoples.lastname }}
             </b>
           </div>
         </router-link>
@@ -35,7 +45,7 @@
         @click="expanded = !expanded"
       />
     </q-card-actions>
-    <q-slide-transition>
+    <!-- <q-slide-transition>
       <div v-show="expanded" expand-separator>
         <q-separator />
         <q-card-section class="text-subitle2">
@@ -50,10 +60,28 @@
           </p>
         </q-card-section>
       </div>
-    </q-slide-transition>
+    </q-slide-transition> -->
   </q-card>
 </template>
 
+<script>
+import { ref } from 'vue'
+export default {
+  name: 'PeopleCard',
+
+  setup() {
+    return {
+      expanded: ref(false)
+    }
+  },
+  props: {
+    peoples: {
+      type: Object,
+      required: true
+    }
+  }
+}
+</script>
 <style scope>
 .my-card:hover {
   cursor: pointer;
@@ -69,21 +97,3 @@
   color: #1976d3;
 }
 </style>
-
-<script>
-import { ref } from 'vue'
-export default {
-  name: 'PeopleCard',
-  setup() {
-    return {
-      expanded: ref(false)
-    }
-  },
-  props: {
-    peoples: {
-      type: Object,
-      required: true
-    }
-  }
-}
-</script>

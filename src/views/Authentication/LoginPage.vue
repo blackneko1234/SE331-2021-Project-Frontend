@@ -4,7 +4,11 @@
       <div class="text-h3 flex flex-center" style="margin-bottom: 1%">
         <b style="text-shadow: 4px 4px lightgray"> Login </b>
       </div>
-      <Form :validation-schema="schema" style="margin: 5%">
+      <Form
+        @submit="handleLogin"
+        :validation-schema="schema"
+        style="margin: 5%"
+      >
         <Field name="username" v-slot="{ errorMessage, value, field }">
           <q-input
             :model-value="value"
@@ -13,14 +17,13 @@
             :error="!!errorMessage"
             @keydown.space.prevent
             name="username"
-            v-model="username"
             label="Username"
             class="text-box-align"
-            :rules="[(val) => !!val || 'Username is required!']"
           />
         </Field>
         <Field name="password" v-slot="{ errorMessage, value, field }">
           <q-input
+            :type="isPwd ? 'password' : 'text'"
             :model-value="value"
             v-bind="field"
             :error-message="errorMessage"
@@ -29,9 +32,6 @@
             name="password"
             label="Password"
             class="text-box-align"
-            :rules="[(val) => !!val || 'Password is required!']"
-            v-model="password"
-            :type="isPwd ? 'password' : 'text'"
           >
             <template v-slot:append>
               <q-icon
@@ -47,12 +47,12 @@
             {{ message }}
           </div>
           <q-btn
-            @click="handleLogin"
             split
             rounded
             color="primary"
             class="btn-submit"
             label="Login"
+            type="submit"
           />
           <div style="margin-top: 5%">
             Do you want to join us?
@@ -82,6 +82,12 @@ export default {
     Form,
     Field
   },
+  props: {
+    people: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     const schema = yup.object().shape({
       username: yup.string().required().label('Username'),
@@ -94,24 +100,36 @@ export default {
   },
   setup() {
     return {
-      username: ref(''),
-      password: ref(''),
       isPwd: ref(true)
+    }
+  },
+  computed: {
+    currentUser() {
+      return localStorage.getItem('user')
+    },
+    isAdmin() {
+      return AuthService.hasRoles('ROLE_ADMIN')
+    },
+    isDoctor() {
+      return AuthService.hasRoles('ROLE_DOCTOR')
+    },
+    isUser() {
+      return AuthService.hasRoles('ROLE_USER')
     }
   },
   methods: {
     handleLogin(user) {
       AuthService.login(user)
         .then(() => {
-          if (this.Vaccination.isUser && this.Vaccination.currentUser) {
-            this.$router.push({ name: 'PeopleDetail' })
-          } else if (
-            this.Vaccination.isDoctor &&
-            this.Vaccination.currentUser
-          ) {
-            this.$router.push({ name: 'Home' })
-          } else if (this.Vaccination.isAdmin && this.Vaccination.currentUser) {
+          if (this.isAdmin) {
             this.$router.push({ name: 'AdminConsole' })
+          } else if (this.isUser) {
+            this.$router.push({
+              name: 'PeopleDetail',
+              params: { id: this.Vaccination.currentUser.id }
+            })
+          } else if (this.isDoctor) {
+            this.$router.push({ name: 'Home' })
           }
         })
         .catch(() => {

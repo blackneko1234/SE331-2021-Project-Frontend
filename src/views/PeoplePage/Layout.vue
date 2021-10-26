@@ -20,7 +20,13 @@
 </template>
 <script>
 export default {
-  inject: ['Vaccination']
+  inject: ['Vaccination'],
+  props: {
+    people: {
+      type: Object,
+      required: true
+    }
+  }
 }
 </script>
 <style scope>

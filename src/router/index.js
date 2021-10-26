@@ -19,7 +19,6 @@ const routes = [
     name: 'Home',
     component: PeopleList,
     props: (route) => ({ page: parseInt(route.query.page) || 1, perPage: parseInt(route.query.perPage) || 4 }),
-
   },
   {
     path: '/admin/console',
@@ -42,7 +41,7 @@ const routes = [
     component: AboutUs
   },
   {
-    path: '/people/:id',
+    path: '/patients/:id',
     name: 'Layout',
     props: true,
     component: Layout,

@@ -13,7 +13,6 @@ export default {
         }).catch((error) => {
             return Promise.reject(error)
         })
-
     },
     logout() {
         localStorage.removeItem('token')
@@ -37,14 +36,25 @@ export default {
     },
     register(user) {
         return apiClient.post('/auth/registers', {
-            name: user.name,
-            surname: user.surname,
             username: user.username,
             password: user.password,
-            birthdate: user.birthdate,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            gender: user.gender,
             hometown: user.hometown,
-            gender: user.gender
-
+            birthdate: user.birthdate,
+            image: user.image,
+            age: user.age,
+        })
+    },
+    uploadFile(file) {
+        let formData = new FormData()
+        formData.append('file', file)
+        return apiClient.post('/uploadFile', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
         })
     }
+
 }

@@ -1,13 +1,5 @@
 <template>
   <form class="review-form q-gutter-lg" @submit.prevent="onSubmit">
-    <q-input id="DoctorName" rounded v-model="DoctorName" label="Doctor Name" />
-
-    <q-input
-      id="DoctorSurname"
-      rounded
-      v-model="DoctorSurname"
-      label="Doctor Surname"
-    />
     <q-editor id="Description" v-model="Description" min-height="10 rem" />
     <div class="row flex flex-center justify-center">
       <q-btn

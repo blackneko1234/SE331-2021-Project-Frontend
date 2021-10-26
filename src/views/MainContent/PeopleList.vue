@@ -120,6 +120,7 @@ import PeopleCard from '@/components/PeopleCard.vue'
 import PeopleService from '@/services/PeopleService.js'
 
 export default {
+  inject: ['Vaccination'],
   name: 'PeopleList',
   components: {
     PeopleCard

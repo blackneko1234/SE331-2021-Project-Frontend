@@ -4,32 +4,36 @@
       <div class="text-h3 flex flex-center" style="margin-bottom: 1%">
         <b style="text-shadow: 4px 4px lightgray"> Sign up </b>
       </div>
-      <Form :validation-schema="schema" style="margin: 5%">
+      <Form
+        @submit="handleRegister"
+        :validation-schema="schema"
+        style="margin: 5%"
+      >
         <div class="row">
-          <Field name="name" v-slot="{ errorMessage, value, field }">
+          <Field name="firstname" v-slot="{ errorMessage, value, field }">
             <q-input
               :model-value="value"
               v-bind="field"
               @keydown.space.prevent
-              name="name"
-              v-model="name"
-              label="Name"
+              name="firstname"
+              label="Firstname"
               class="text-box-align col-5"
               :error-message="errorMessage"
               :error="!!errorMessage"
+              v-on:keypress="isLetterOnly($event)"
             />
           </Field>
-          <Field name="surname" v-slot="{ errorMessage, value, field }">
+          <Field name="lastname" v-slot="{ errorMessage, value, field }">
             <q-input
               :model-value="value"
               v-bind="field"
               @keydown.space.prevent
-              name="surname"
-              v-model="surname"
-              label="Surname"
+              name="lastname"
+              label="Lastname"
               :error-message="errorMessage"
               :error="!!errorMessage"
               class="text-box-align col-7"
+              v-on:keypress="isLetterOnly($event)"
             />
           </Field>
         </div>
@@ -41,10 +45,10 @@
             :error="!!errorMessage"
             @keydown.space.prevent
             name="username"
-            v-model="username"
             label="Username"
             maxlength="20"
             class="text-box-align"
+            v-on:keypress="isLetterOrNumber($event)"
           />
         </Field>
         <Field name="password" v-slot="{ errorMessage, value, field }">
@@ -58,8 +62,8 @@
             label="Password"
             maxlength="40"
             class="text-box-align"
-            v-model="password"
             :type="isPwd ? 'password' : 'text'"
+            v-on:keypress="isLetterOrNumber($event)"
           >
             <template v-slot:append>
               <q-icon
@@ -79,7 +83,6 @@
               :error-message="errorMessage"
               :error="!!errorMessage"
               class="text-box-align col-5"
-              v-model="gender"
               :options="options"
               label="Gender"
             />
@@ -91,10 +94,10 @@
               :error-message="errorMessage"
               :error="!!errorMessage"
               @keydown.space.prevent
+              v-model="date"
               label="Birth Date"
-              class="text-box-align col-7"
-              v-model="birthdate"
-              mask="date"
+              class="text-box-align col-7 calculatedAge"
+              mask="####-##-##"
             >
               <template v-slot:append>
                 <q-icon name="event" class="cursor-pointer">
@@ -103,7 +106,7 @@
                     transition-show="scale"
                     transition-hide="scale"
                   >
-                    <q-date minimal v-model="birthdate">
+                    <q-date minimal v-model="date">
                       <div class="row items-center justify-end">
                         <q-btn
                           v-close-popup
@@ -126,13 +129,12 @@
             :error-message="errorMessage"
             :error="!!errorMessage"
             class="text-box-align"
-            v-model="hometown"
             :options="province"
             label="Hometown"
           />
         </Field>
         <div class="text-box-align" style="margin-top: 5%">
-          <UploadImages :max="1" />
+          <UploadImages :max="1" @changed="handleImages" name="image" />
         </div>
 
         <div style="text-align: center; margin-top: 5%">
@@ -140,7 +142,6 @@
             {{ message }}
           </div>
           <q-btn
-            @click="handleRegister"
             split
             rounded
             color="primary"
@@ -171,7 +172,6 @@ import UploadImages from 'vue-upload-drop-images'
 import { ref } from 'vue'
 import AuthService from '@/services/AuthService.js'
 export default {
-  inject: ['Vaccination'],
   name: 'Register',
   components: {
     UploadImages,
@@ -180,29 +180,72 @@ export default {
   },
   data() {
     const schema = yup.object().shape({
-      name: yup.string().required().label('Name'),
-      surname: yup.string().required().label('Surname'),
+      firstname: yup.string().required().label('Firstname'),
+      lastname: yup.string().required().label('Lastname'),
       username: yup.string().required().min(3).max(20).label('Username'),
       password: yup.string().required().min(6).max(40).label('Password'),
       gender: yup.string().required().label('Gender'),
       birthdate: yup.string().required().label('Birth Date'),
-      hometown: yup.string().required().label('Hometown')
+      hometown: yup.string().required().label('Hometown'),
+      image: yup.string()
     })
     return {
-      loading: false,
       message: '',
-      schema
+      schema,
+      image: '',
+      files: [],
+      age: ''
+    }
+  },
+  computed: {
+    calculateAge: function () {
+      let currentDate = new Date()
+      let birthDate = new Date(String(this.date))
+      let difference = currentDate - birthDate
+      let age = Math.floor(difference / 31557600000)
+      return age
+    }
+  },
+  methods: {
+    handleRegister(user) {
+      Promise.all(
+        this.files.map((file) => {
+          return AuthService.uploadFile(file)
+        })
+      ).then((response) => {
+        user.age = this.calculateAge
+        user.image = response.map((r) => r.data)
+        user.image = user.image[0]
+        AuthService.register(user)
+          .then(() => {
+            this.$router.push({ name: 'Login' })
+          })
+          .catch(() => {
+            this.message = 'Cannot register to the system'
+            setTimeout(() => {
+              this.message = ''
+            }, 2000)
+          })
+      })
+    },
+
+    handleImages(files) {
+      this.files = files
+    },
+    isLetterOrNumber(e) {
+      let char = String.fromCharCode(e.keyCode)
+      if (/^[A-Za-z0-9_-]+$/.test(char)) return true
+      else e.preventDefault()
+    },
+    isLetterOnly(e) {
+      let char = String.fromCharCode(e.keyCode)
+      if (/^[A-Za-z]+$/.test(char)) return true
+      else e.preventDefault()
     }
   },
   setup() {
     return {
-      name: ref(''),
-      surname: ref(''),
-      username: ref(''),
-      password: ref(''),
-      birthdate: ref(''),
-      hometown: ref(''),
-      gender: ref(''),
+      date: ref(''),
       isPwd: ref(true),
       options: ['Male', 'Female', 'LGBTQ', 'Genderless'],
       province: [
@@ -284,21 +327,6 @@ export default {
         'Yala',
         'Yasothon'
       ]
-    }
-  },
-
-  methods: {
-    handleRegister(user) {
-      AuthService.register(user)
-        .then(() => {
-          this.$router.push({ name: 'Login' })
-        })
-        .catch(() => {
-          this.message = 'Cannot register to the system'
-          setTimeout(() => {
-            this.message = ''
-          }, 2000)
-        })
     }
   }
 }
