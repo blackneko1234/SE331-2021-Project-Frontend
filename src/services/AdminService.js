@@ -8,5 +8,14 @@ export default {
             authorities: [role]
         })
     },
+    deleteUser(id) {
+        return apiClient.delete('/delete/' + id)
+    },
+    getVaccine() {
+        return apiClient.get('/vaccines')
+    },
+    saveVaccine(id, vaccine) {
+        return apiClient.post('/AddVaccineToPatient/' + id, vaccine)
+    }
 
 }

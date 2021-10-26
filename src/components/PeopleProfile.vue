@@ -31,8 +31,6 @@
             <b>Gender:</b> {{ people.gender }}
             <br />
             <b> Hometown:</b> {{ people.hometown }}
-            <br />
-            <b>Status:</b> {{ people.status }}
           </div>
         </q-card-section>
       </div>

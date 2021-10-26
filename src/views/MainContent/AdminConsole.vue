@@ -16,122 +16,29 @@
           <th class="text-center">Approve</th>
         </tr>
       </thead>
-      <tbody v-for="data in people" :key="data.id" :data="data">
-        <tr v-if="data.enabled == false">
-          <td class="text-center">{{ data.id }}</td>
-          <td class="text-center">{{ data.username }}</td>
-          <td class="text-center">
-            <q-select class="text-box-align" :options="roles" v-model="role" />
-            <q-btn
-              label="Add patient"
-              color="primary"
-              style="margin-top: 3%"
-              @click="alert = true"
-              v-if="role.value == 'ROLE_DOCTOR'"
-            />
-            <div v-if="role.value == 'ROLE_DOCTOR'">{{ patientSelectedList }}</div>
-            <q-dialog v-model="alert">
-              <q-card>
-                <q-card-section>
-                  <div class="text-h6">Add patient</div>
-                </q-card-section>
-
-                <q-card-section class="q-pt-none">
-                  <q-option-group
-                    :options="patient"
-                    type="checkbox"
-                    v-model="group"
-                  />
-                </q-card-section>
-
-                <q-card-actions align="right">
-                  <q-btn flat label="Cancel" color="primary" v-close-popup />
-                  <q-btn
-                    flat
-                    label="Add"
-                    color="primary"
-                    v-close-popup
-                    @click="PatientListSelected"
-                  />
-                </q-card-actions>
-              </q-card>
-            </q-dialog>
-          </td>
-          <td class="text-center">
-            <div class="row">
-              <div class="col-6">
-                <q-select
-                  class="text-box-align"
-                  v-model="vaccine1"
-                  :options="vaccines"
-                />
-              </div>
-
-              <div class="col-6">
-                <q-select
-                  class="text-box-align"
-                  v-model="vaccine2"
-                  :options="vaccines"
-                />
-              </div>
-            </div>
-          </td>
-
-          <td class="text-center">
-            <q-td class="row justify-center">
-              <q-btn
-                color="green"
-                style="margin-right: 3%"
-                @click="AcceptUser(data.id)"
-              >
-                Accept
-              </q-btn>
-              <q-btn color="red"> Reject </q-btn>
-            </q-td>
-          </td>
-        </tr>
+      <tbody>
+        <AdminTable v-for="data in people" :key="data.id" :data="data" />
       </tbody>
     </q-markup-table>
   </div>
 </template>
 <script>
 import { ref } from 'vue'
+import AdminTable from '@/components/AdminTable.vue'
 import AdminService from '@/services/AdminService.js'
 export default {
-  setup() {
+  data() {
     return {
-      role: ref(''),
-      roles: [
-        { label: 'Doctor', value: 'ROLE_DOCTOR' },
-        { label: 'Patient', value: 'ROLE_PATIENT' }
-      ],
-      vaccines: ['null', 'Pfizer', 'Moderna'],
-      separator: ref('vertical'),
-      group: ref([]),
-      patientSelectedList: ref([]),
-      patient: [
-        { label: 'Patient 1', value: 'pa1' },
-        { label: 'Patient 2', value: 'pa2' },
-        { label: 'Patient 3', value: 'pa3' }
-      ],
-      alert: ref(false),
-      vaccine1: ref(''),
-      vaccine2: ref('')
+      people: ''
     }
   },
-  methods: {
-    VaccineCheck() {
-      if (this.vaccine == null) {
-        this.vaccine = 'Null'
-      }
-    },
-    PatientListSelected() {
-      this.patientSelectedList.push(this.patient[0])
-    },
-    AcceptUser(id) {
-      AdminService.changeAndAcceptRole(id, this.role.value).then(() => {
-        location.reload()
-      })
+  components: {
+    AdminTable
+  },
+
+  setup() {
+    return {
+      separator: ref('vertical')
     }
   },
   created() {
@@ -142,16 +49,6 @@ export default {
       .catch((error) => {
         console.log(error)
       })
-  },
-  data() {
-    return {
-      people: null
-    }
   }
 }
 </script>
-<style scoped>
-.pointer:hover {
-  cursor: pointer;
-}
-</style>

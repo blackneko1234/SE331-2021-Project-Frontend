@@ -12,6 +12,7 @@ import NetworkError from '../views/ErrorHandling/NetworkError.vue'
 import Register from '../views/Authentication/RegisterPage.vue'
 import Login from '../views/Authentication/LoginPage.vue'
 import AdminConsole from '../views/MainContent/AdminConsole.vue'
+import AdminService from '../services/AdminService'
 
 const routes = [
   {
@@ -24,6 +25,12 @@ const routes = [
     path: '/admin/console',
     name: 'AdminConsole',
     component: AdminConsole,
+    beforeEnter: () => {
+      return AdminService.getVaccine()
+        .then((response) => {
+          Vaccination.vaccine = response.data
+        })
+    }
   },
   {
     path: '/login',

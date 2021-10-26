@@ -32,7 +32,7 @@
       </div>
     </div>
     <div class="row q-gutter-md" v-if="isUser">
-      <div class="col-xs-12 col-sm-12 col-md-11" >
+      <div class="col-xs-12 col-sm-12 col-md-11">
         <q-card style="height: 100%">
           <q-card-section>
             <DoctorComment :comments="comments" /> </q-card-section

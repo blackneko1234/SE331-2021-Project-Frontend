@@ -27,8 +27,6 @@ export default {
   methods: {
     onSubmit() {
       if (
-        this.DoctorName === '' ||
-        this.DoctorSurname === '' ||
         this.Description === ''
       ) {
         this.Vaccination.DoctorNotify = 'Please input the data completely'

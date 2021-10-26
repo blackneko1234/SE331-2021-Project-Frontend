@@ -1,5 +1,10 @@
 <template>
-  <q-card class="my-card shadow-10" :root="listEl" transition="scale">
+  <q-card
+    class="my-card shadow-10"
+    :root="listEl"
+    transition="scale"
+    v-if="peoples.authorities == 'ROLE_USER' && peoples.enabled === true"
+  >
     <q-card-section horizontal>
       <q-img
         class="col-5"
@@ -30,11 +35,11 @@
           </div>
         </router-link>
         <q-separator />
-        <p style="font-size: 18px"><b>Status:</b> {{ peoples.status }}</p>
+        <p style="font-size: 18px"><b>Total dose:</b> {{ peoples.dose }}</p>
       </q-card-section>
     </q-card-section>
     <q-separator />
-    <q-card-actions>
+    <!--  <q-card-actions>
       <q-space />
       <q-btn
         color="grey"
@@ -44,7 +49,7 @@
         :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
         @click="expanded = !expanded"
       />
-    </q-card-actions>
+    </q-card-actions> -->
     <!-- <q-slide-transition>
       <div v-show="expanded" expand-separator>
         <q-separator />
