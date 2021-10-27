@@ -1,6 +1,7 @@
 version: "3.9"
 services:
     web:
-        image: "blackneko1234/331-finalProject:latest"
+        image: "blackneko1234/331-finalproject:latest"
         ports: 
             - 8001:80
+    
