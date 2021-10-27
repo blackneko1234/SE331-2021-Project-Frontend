@@ -1,0 +1,14 @@
+'on':
+  push:
+    branches:
+      - prod
+jobs:
+  docker:
+    runs-on: ubuntu-latest   
+        with:
+          context: .
+          push: true
+          tags: blackneko1234/331-finalProject:latest
+      - 
+        name: prepare the docker-compose run
+        run: |    
